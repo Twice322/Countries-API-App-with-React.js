@@ -1,0 +1,49 @@
+.header {
+  background: var(--elements);
+  transition: background 0.5s ease;
+  transition: color 0.5s ease;
+  box-shadow: var(--shadow);
+  &__title {
+    font-weight: 800;
+    font-size: 25px;
+    @media screen and (max-width: 540px) {
+      font-size: 17.5px;
+    }
+    @media screen and (min-width: 760px) {
+      font-size: 27.5px;
+    }
+  }
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__mode {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    @media screen and (max-width: 300px) {
+      font-size: 12px;
+    }
+
+    @media screen and (max-width: 540px) {
+      font-size: 24px;
+    }
+    @media screen and (min-width: 760px) {
+      font-size: 27.5px;
+    }
+    .theme {
+      &__icon {
+        font-size: 30px;
+        margin-right: 10px;
+        @media screen and (max-width: 540px) {
+          font-size: 24px;
+        }
+        @media screen and (min-width: 760px) {
+          font-size: 27.5px;
+        }
+      }
+    }
+  }
+}

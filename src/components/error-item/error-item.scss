@@ -1,0 +1,20 @@
+.error {
+  max-width: 600px;
+  height: 100px;
+  margin: 250px auto;
+  border: 1px solid rgba(165, 165, 165, 0.35);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &__container {
+    font-size: 30px;
+  }
+  &__text__container {
+    text-align: center;
+  }
+  &__text {
+    padding-left: 10px;
+  }
+}

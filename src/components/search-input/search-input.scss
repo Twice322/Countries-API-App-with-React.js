@@ -1,0 +1,36 @@
+.search {
+  &__input__wrapper {
+    position: relative;
+    box-shadow: var(--shadow);
+    @media screen and (max-width: 540px) {
+      width: 100%;
+    }
+  }
+  &__input {
+    background: var(--elements);
+    color: var(--input);
+    transition: background 0.5s ease;
+    transition: color 0.5s ease;
+    width: 500px;
+    height: 55px;
+    font-size: 16px;
+    padding-left: 55px;
+    border-radius: 5px;
+    &::placeholder {
+      color: inherit;
+      @media screen and (max-width: 540px) {
+        font-size: 13.5px;
+
+      }
+    }
+    @media screen and (max-width: 540px) {
+      width: 100%;
+    }
+  }
+  &__icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translate(50%, -50%);
+  }
+}
