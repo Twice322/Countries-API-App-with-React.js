@@ -9,13 +9,17 @@ import {
   SelectHeader,
 } from "./select-components/select-components";
 import { WithApiService } from "../higher-order-component";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { loadCountriesByRegion, countriesRequested } from "../../actions";
 const onSelectClick = (target, setRegion) => {
-  if (target.classList.contains("select__item")) {
-    setRegion(target.dataset.value);
-  }
+  setRegion(target.dataset.value);
 };
-
-const SelectRegion = ({ getData, setData }) => {
+const SelectRegion = ({
+  loadCountriesByRegion,
+  getData,
+  countriesRequested,
+}) => {
   const [active, setActive] = useState(false);
   const [region, setRegion] = useState("Filter by region");
 
@@ -30,11 +34,12 @@ const SelectRegion = ({ getData, setData }) => {
   }, [active]);
   useEffect(() => {
     if (region !== "Filter by region") {
+      countriesRequested();
       getData(region.toLowerCase()).then((response) => {
-        setData(response);
+        loadCountriesByRegion(response);
       });
     }
-  }, [region, getData, setData]);
+  }, [region]);
 
   return (
     <div className="select" onClick={() => toggleActive(setActive, active)}>
@@ -55,5 +60,16 @@ const SelectRegion = ({ getData, setData }) => {
 const mapMethodsToProps = (apiService) => {
   return apiService.getCountriesByRegion;
 };
-
-export default WithApiService(SelectRegion, mapMethodsToProps);
+const mapStateToProps = ({ region }) => {
+  return { region };
+};
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    { loadCountriesByRegion, countriesRequested },
+    dispatch
+  );
+};
+export default WithApiService(
+  connect(mapStateToProps, mapDispatchToProps)(SelectRegion),
+  mapMethodsToProps
+);

@@ -6,34 +6,37 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import ErrorContainer from "./components/error-container/error-container";
 import React from "react";
-import { Provider } from "./components/service-context";
-
+import { CountriesApiProvider } from "./components/service-context";
+import { Provider } from "react-redux";
+import store from "./store";
 const App = () => {
   const countriesService = new RestCountriesAPI();
   return (
     <div className="App">
-      <ErrorContainer>
-        <Provider value={countriesService}>
-          <Router>
-            <Header />
-            <Switch>
-              <Route
-                path={"/"}
-                render={() => {
-                  return <Countries />;
-                }}
-                exact
-              />
-              <Route
-                path={"/country/:name"}
-                render={({ match }) => {
-                  return <CountryDetails countryName={match.params.name} />;
-                }}
-              />
-            </Switch>
-          </Router>
-        </Provider>
-      </ErrorContainer>
+      <Provider store={store}>
+        <ErrorContainer>
+          <CountriesApiProvider value={countriesService}>
+            <Router>
+              <Header />
+              <Switch>
+                <Route
+                  path={"/"}
+                  render={() => {
+                    return <Countries />;
+                  }}
+                  exact
+                />
+                <Route
+                  path={"/country/:name"}
+                  render={({ match }) => {
+                    return <CountryDetails countryName={match.params.name} />;
+                  }}
+                />
+              </Switch>
+            </Router>
+          </CountriesApiProvider>
+        </ErrorContainer>
+      </Provider>
     </div>
   );
 };

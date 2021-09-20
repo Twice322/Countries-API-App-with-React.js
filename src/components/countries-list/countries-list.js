@@ -1,9 +1,8 @@
 import React, { Fragment } from "react";
-import { useState } from "react/cjs/react.development";
 import { CountryItem } from "../country-item/country-item";
-import { MoreButton } from "../more-button/moreButton";
-import DataWrapper from "../higher-order-component/with-data";
+import MoreButton from "../more-button/moreButton";
 import { WithApiService } from "../higher-order-component";
+import { connect } from "react-redux";
 import "./countries-list.scss";
 
 const showVisibleContent = (content, visible) => {
@@ -20,20 +19,12 @@ const showVisibleContent = (content, visible) => {
   });
 };
 
-const CountriesList = ({ data }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [visible, setVisible] = useState(20);
-  const countriesItems = showVisibleContent(data, visible);
+const CountriesList = ({ visibleData, visible }) => {
+  const countriesItems = showVisibleContent(visibleData, visible);
   return (
     <Fragment>
       <div className="countries__list">{countriesItems}</div>
-      <MoreButton
-        visible={visible}
-        setVisible={setVisible}
-        loaded={loaded}
-        setLoaded={setLoaded}
-        amount={data ? data.length : null}
-      />
+      <MoreButton visibleData={visibleData} />
     </Fragment>
   );
 };
@@ -41,4 +32,12 @@ const CountriesList = ({ data }) => {
 const mapMethodsToProps = (apiService) => {
   return apiService.getAllCountries;
 };
-export default WithApiService(DataWrapper(CountriesList), mapMethodsToProps);
+
+const mapStateToProps = ({ countriesList, visible }) => {
+  return { countriesList, visible };
+};
+
+export default WithApiService(
+  connect(mapStateToProps)(CountriesList),
+  mapMethodsToProps
+);

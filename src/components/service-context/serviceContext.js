@@ -1,5 +1,6 @@
 import { createContext } from "react";
 
-const { Provider, Consumer } = createContext();
+const { Provider: CountriesApiProvider, Consumer: CountriesApiConsumer } =
+  createContext();
 
-export { Provider, Consumer };
+export { CountriesApiProvider, CountriesApiConsumer };

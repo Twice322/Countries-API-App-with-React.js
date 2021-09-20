@@ -1,3 +1,3 @@
-import { Provider, Consumer } from "./serviceContext";
+import { CountriesApiProvider, CountriesApiConsumer } from "./serviceContext";
 
-export { Provider, Consumer };
+export { CountriesApiProvider, CountriesApiConsumer };
