@@ -7,7 +7,7 @@ const CountryDetailsInfoList = ({ children }) => {
 
 const CountryDetailsInfoListItem = ({ field, value }) => {
   return (
-    <li className="country__info__list__item" id="population">
+    <li className="country__info__list__item">
       <h5 className="country__info__list__item__title">{field}:</h5>
       <span>{value}</span>
     </li>

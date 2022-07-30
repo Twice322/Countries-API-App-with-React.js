@@ -17,6 +17,7 @@ const loadCountriesByRegion = (newCountries) => {
   };
 };
 const loadCountryDetails = (country) => {
+  console.logf(country);
   return {
     type: "LOAD_COUNTRY_DETAILS",
     payload: country,

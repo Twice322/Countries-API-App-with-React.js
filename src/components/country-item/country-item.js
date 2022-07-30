@@ -8,10 +8,18 @@ import {
   CountryDescription,
   CountryFlag,
 } from "./country-item-info/country-item-info";
-export const CountryItem = ({ flag, name, population, region, capital }) => {
+
+export const CountryItem = ({
+  name: { common: name },
+  flags: { png: flag },
+  population,
+  region,
+  capital,
+}) => {
   const regExp = /(\d)(?=(\d\d\d)+([^\d]|$))/g;
+  
   return (
-    <NavLink to={`country/${name}`} className="country__item">
+    <NavLink to={`/${name}`} className="country__item">
       <CountryFlag src={flag} />
       <CountryDescription>
         <CountryInfoBlock>

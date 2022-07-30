@@ -1,7 +1,7 @@
-import { indexedAlphaCode } from "../constants/constants";
+import { indexedAlphaCode } from "../../components/constants/constants";
 
 export default class RestCountriesAPI {
-  _apiUrl = "https://restcountries.eu/rest/v2/";
+  _apiUrl = "https://restcountries.com/v2/";
   transformData = (country) => {
     return {
       name: country["name"],
@@ -13,15 +13,21 @@ export default class RestCountriesAPI {
       nativeName: country["nativeName"],
       subregion: country["subregion"],
       topLevelDomain: country["topLevelDomain"][0],
-      currencies: country["currencies"][0].name,
+      currencies: country?.currencies || "Валюта неизвестна",
       languages: country["languages"],
+      alphaCode: country["alpha2Code"],
     };
   };
 
   getAllCountries = async () => {
     return await fetch(this._apiUrl + "all")
-      .then((response) => response.json())
-      .then((data) => data.map((country) => this.transformData(country)))
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        return data.map((country) => this.transformData(country));
+      })
       .catch((error) => error);
   };
 
@@ -32,19 +38,20 @@ export default class RestCountriesAPI {
       .catch((error) => error);
   };
 
-  getCountryByName = async (name) => {
-    return await fetch(this._apiUrl + `name/${name}`)
+  getCountryByAlphaCode = async (alphaCode) => {
+    return await fetch(this._apiUrl + `alpha/${alphaCode}`)
       .then((response) => response.json())
-      .then((data) =>
-        data.map((country) => {
+      .then((data) => {
+        console.log(data);
+        return [data].map((country) => {
           const bordersObj = {
             borders: country["borders"].map((item) =>
               indexedAlphaCode[item] ? indexedAlphaCode[item].name : item
             ),
           };
           return Object.assign(this.transformData(country), bordersObj);
-        })
-      )
+        });
+      })
       .catch((error) => error);
   };
 }

@@ -8,23 +8,23 @@ import {
   SelectItem,
   SelectHeader,
 } from "./select-components/select-components";
-import { WithApiService } from "../higher-order-component";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { loadCountriesByRegion, countriesRequested } from "../../actions";
+import { useDispatch } from "react-redux";
+import { useGetCountryByRegionQuery } from "../../store/countriesApi";
+import { setData } from "../../store/slices/countriesSlice";
+
 const onSelectClick = (target, setRegion) => {
   setRegion(target.dataset.value);
 };
-const SelectRegion = ({
-  loadCountriesByRegion,
-  getData,
-  countriesRequested,
-}) => {
+
+const SelectRegion = () => {
   const [active, setActive] = useState(false);
-  const [region, setRegion] = useState("Filter by region");
+  const [region, setRegion] = useState("");
+  const { data, isLoading } = useGetCountryByRegionQuery(region, {
+    skip: !region,
+  });
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check if user clicked outside the select menu then close it
     document.addEventListener("click", ({ target }) =>
       clickOutsideHandler(target, active, setActive)
     );
@@ -32,14 +32,10 @@ const SelectRegion = ({
       clickOutsideHandler(target, active, setActive)
     );
   }, [active]);
+
   useEffect(() => {
-    if (region !== "Filter by region") {
-      countriesRequested();
-      getData(region.toLowerCase()).then((response) => {
-        loadCountriesByRegion(response);
-      });
-    }
-  }, [region]);
+    dispatch(setData(data));
+  }, [data]);
 
   return (
     <div className="select" onClick={() => toggleActive(setActive, active)}>
@@ -57,19 +53,5 @@ const SelectRegion = ({
     </div>
   );
 };
-const mapMethodsToProps = (apiService) => {
-  return apiService.getCountriesByRegion;
-};
-const mapStateToProps = ({ region }) => {
-  return { region };
-};
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators(
-    { loadCountriesByRegion, countriesRequested },
-    dispatch
-  );
-};
-export default WithApiService(
-  connect(mapStateToProps, mapDispatchToProps)(SelectRegion),
-  mapMethodsToProps
-);
+
+export default SelectRegion;

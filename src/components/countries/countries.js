@@ -1,67 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import CountriesList from "../countries-list/countries-list";
 import Container from "../container/container";
 import SearchAndFilterPanel from "../search-and-filter-panel/search-and-filter-panel";
-import { searchCountry } from "../help-functions/help-functions";
-import ErrorContainer from "../error-container/error-container";
-import { connect } from "react-redux";
-import { WithApiService } from "../higher-order-component";
-import { bindActionCreators } from "redux";
-import { countriesLoaded, errorFounded } from "../../actions";
 import Loader from "../loader/loader";
-import { countriesRequested } from "../../actions";
+import { useGetAllCountriesQuery } from "../../store/countriesApi";
+import { ErrorItem } from "../error-item/error-item";
+import { useDispatch, useSelector } from "react-redux";
+import { setData } from "../../store/slices/countriesSlice";
 import "./countries.scss";
 
-const Countries = ({ countriesList, term, setTerm }) => {
-  const visibleData = searchCountry(term, countriesList);
+const Countries = () => {
+  const { currentData = [], error, isLoading } = useGetAllCountriesQuery();
+  const { items = [] } = useSelector((state) => state.countries);
+
+  const [filtredItems, setFiltredItems] = React.useState(items);
+  const dispatch = useDispatch();
+
+  const onFilteredItems = (value = "") => {
+    setFiltredItems(
+      items.filter((item) =>
+        item.name.common.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+  };
+
+  React.useEffect(() => {
+    if (currentData.length) {
+      dispatch(setData(currentData));
+    }
+  }, [currentData]);
+
+  React.useEffect(() => {
+    if (items.length) {
+      onFilteredItems();
+    }
+  }, [items]);
+
+  if (error) {
+    return <ErrorItem />;
+  }
   return (
-    <ErrorContainer>
-      <section className="countries">
-        <Container>
-          <SearchAndFilterPanel term={term} setTerm={setTerm} />
-          <CountriesList term={term} visibleData={visibleData} />
-        </Container>
-      </section>
-    </ErrorContainer>
+    <section className="countries">
+      <Container>
+        {isLoading && <Loader />}
+        {items && !isLoading && (
+          <>
+            <SearchAndFilterPanel onFilteredItems={onFilteredItems} />
+            <CountriesList items={filtredItems} />
+          </>
+        )}
+      </Container>
+    </section>
   );
 };
-const CountriesContainer = ({
-  countriesList,
-  getData,
-  countriesLoaded,
-  loading,
-  countriesRequested,
-}) => {
-  useEffect(() => {
-    // console.log(loading);
-    countriesRequested();
-    getData()
-      .then((res) => {
-        countriesLoaded(res);
-      })
-      .catch((error) => errorFounded(error));
-  }, []);
-  const [term, setTerm] = useState("");
-  if (!loading) {
-    return (
-      <Countries countriesList={countriesList} term={term} setTerm={setTerm} />
-    );
-  }
 
-  return <Loader />;
-};
-
-const mapMethodsToProps = (apiService) => {
-  return apiService.getAllCountries;
-};
-const mapStateToProps = ({ countriesList, loading, error }) => {
-  return { countriesList, loading, error };
-};
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ countriesLoaded, countriesRequested }, dispatch);
-};
-
-export default WithApiService(
-  connect(mapStateToProps, mapDispatchToProps)(CountriesContainer),
-  mapMethodsToProps
-);
+export default Countries;

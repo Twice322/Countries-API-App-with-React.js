@@ -4,7 +4,7 @@ import "../select.scss";
 const SelectHeader = ({ region }) => {
   return (
     <div className="select__header">
-      <span>{region}</span>
+      <span>{region || "Filter by region"}</span>
       <i className="fas fa-chevron-down"></i>
     </div>
   );

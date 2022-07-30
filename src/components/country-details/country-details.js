@@ -1,100 +1,95 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Container from "../container/container";
 import "./country-details.scss";
-import { WithApiService } from "../higher-order-component";
-import { listNameObj } from "../constants/constants";
-import {
-  CountryDetailsInfoListItem,
-  CountryDetailsInfoList,
-  CountryFlag,
-  BackBtn,
-} from "./country-details-components";
-import { connect } from "react-redux";
 import Loader from "../loader/loader";
-import { bindActionCreators } from "redux";
-import { loadCountryDetails } from "../../actions";
+import { useGetCountryByNameQuery } from "../../store/countriesApi";
+import { useParams } from "react-router-dom";
+
 const REGEXP = /(\d)(?=(\d\d\d)+([^\d]|$))/g;
 
-const countryCheckValue = (value) => {
-  if (Array.isArray(value)) {
-    return value.map((item) => item.name).join(", ");
+const CountryDetails = () => {
+  const { name } = useParams();
+  const { data, isLoading } = useGetCountryByNameQuery(name);
+  if (isLoading) {
+    return <Loader />;
   }
-
-  if (Number.isInteger(value)) {
-    return String(value).replace(REGEXP, "$1,");
-  }
-
-  return value;
-};
-
-const CountryDetails = ({
-  countryName,
-  getData,
-  loadCountryDetails,
-  countryDetails,
-}) => {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    getData(countryName).then((response) => {
-      loadCountryDetails(...response);
-      setLoading(false);
-    });
-  }, [countryName]);
-
-  if (!loading) {
-    const { flag, name, borders } = countryDetails;
-    const countryInfo = Object.entries(listNameObj).map((item) => {
-      const [value, field] = item;
-      const checkedValue = countryCheckValue(countryDetails[value]);
-      return (
-        <CountryDetailsInfoListItem
-          field={field}
-          value={checkedValue}
-          key={value}
-        />
-      );
-    });
-    return (
-      <div className="country">
-        <Container>
-          <BackBtn />
-          <div className="country__details">
-            <CountryFlag src={flag} />
-            <div className="country__info">
-              <h1 className="country__title">{name}</h1>
-              <CountryDetailsInfoList>{countryInfo}</CountryDetailsInfoList>
-              <div className="country__info__list__item borders">
+  const [_, currency] = Object.entries(data.currencies).flat();
+  console.log(data);
+  return (
+    <div className="country">
+      <Container>
+        <div className="back__btn__wrapper">
+          <button className="back__btn" onClick={() => window.history.back()}>
+            <i className="fas fa-long-arrow-alt-left"></i>
+            <span className="back__btn__text">Back</span>
+          </button>
+        </div>
+        <div className="country__details">
+          <img
+            src={data.flags.png}
+            className="country__flag"
+            alt={"country flag"}
+          />
+          <div className="country__info">
+            <h1 className="country__title">{name}</h1>
+            <ul className="country__info__list">
+              <li className="country__info__list__item">
                 <h5 className="country__info__list__item__title">
-                  Bordered countries:
+                  Native name:
                 </h5>
-                <ul className="borders__list">
-                  {borders.map((item, index) => (
+                <span>{data.name.official}</span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">
+                  Population:
+                </h5>
+                <span>{data.population}</span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">Region:</h5>
+                <span>{data.region}</span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">
+                  Sub Region:
+                </h5>
+                <span>{data.name.official}</span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">Capital:</h5>
+                <span>{data.name.official}</span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">
+                  Currencies:
+                </h5>
+                <span>
+                  {currency.name} ({currency.symbol})
+                </span>
+              </li>
+              <li className="country__info__list__item">
+                <h5 className="country__info__list__item__title">Languages:</h5>
+                <span>{data.name.official}</span>
+              </li>
+            </ul>
+            <div className="country__info__list__item borders">
+              <h5 className="country__info__list__item__title">
+                Bordered countries:
+              </h5>
+              <ul className="borders__list">
+                {data.borders &&
+                  data.borders.slice(0,5).map((item, index) => (
                     <li className="borders__list__item" key={index}>
                       {item}
                     </li>
                   ))}
-                </ul>
-              </div>
+              </ul>
             </div>
           </div>
-        </Container>
-      </div>
-    );
-  } else {
-    return <Loader />;
-  }
+        </div>
+      </Container>
+    </div>
+  );
 };
 
-const mapMethodsToProps = (apiService) => {
-  return apiService.getCountryByName;
-};
-const mapStateToProps = ({ countryDetails }) => {
-  return { countryDetails };
-};
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ loadCountryDetails }, dispatch);
-};
-export default WithApiService(
-  connect(mapStateToProps, mapDispatchToProps)(CountryDetails),
-  mapMethodsToProps
-);
+export default CountryDetails;
