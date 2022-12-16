@@ -1,1 +1,1 @@
-# Countries-API-App-with-React.js
+SPA приложение для получения инфомрации об стране
